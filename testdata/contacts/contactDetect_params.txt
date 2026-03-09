@@ -1,0 +1,18 @@
+topDir	./testdata/	
+imgDir	images	
+particleDir	particles	
+contactDir	contacts	
+solvedDir	solved	
+adjacencyDir	adjacency	
+imgReg	*.jpg	
+frameIdInd	8	
+metersperpixel	4.375e-05	
+fsigma	140	
+g2cal	100	
+dtol	10	
+contactG2Threshold	0.5	
+CR	10	
+imadjust_limits	0	0.65
+rednormal	2	
+figverbose	1	
+time	09-Mar-2026 18:36:42	

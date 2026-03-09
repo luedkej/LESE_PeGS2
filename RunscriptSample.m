@@ -12,7 +12,7 @@ fileParams.frameIdInd = 8; %the index in the file names where sequential numberi
 
 %% verbose
 verbose = true; % do you want plots?
- 
+
 %% particleDetect parameters
 
 pdParams.boundaryType = "rectangle";
