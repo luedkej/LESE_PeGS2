@@ -160,7 +160,8 @@ function out = particleDetect(fileParams, pdParams, verbose)
             a_semi(k)    = stats(k).MajorAxisLength / 2;
             b_semi(k)    = stats(k).MinorAxisLength / 2;
             orient(k)    = stats(k).Orientation;
-            radii(k)     = (a_semi(k) + b_semi(k)) / 2;                % effective r
+            %radii(k)     = (a_semi(k) + b_semi(k)) / 2;                % effective r
+            radii(k)     = min(a_semi(k), b_semi(k));  % conservative r (for edge classification)
         end
     
         % ── Edge classification (identical logic to original) ─────────────────
