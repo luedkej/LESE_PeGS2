@@ -1,4 +1,4 @@
-topDir	C:\Users\Jakob\ETH\Reasearch_Assistance_LESE\repos\PeGS2_Robin\
+topDir	C:\Users\Jakob\ETH\Reasearch_Assistance_LESE\repos\LESE_PeGS2\
 imgDirPos	images_pos
 imgDir	images
 particleDir	particles
@@ -15,4 +15,4 @@ scaling	0.1
 maskradius	0.8
 original	1
 vectorise	0
-time	09-Jun-2026 14:34:31
+time	09-Jun-2026 15:38:24

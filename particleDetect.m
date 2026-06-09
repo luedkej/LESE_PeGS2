@@ -53,105 +53,225 @@ function out = particleDetect(fileParams, pdParams, verbose)
 
 
 
-%% IMPORT DATA & BEGIN ANALYSIS
+%% ── Main loop over images ────────────────────────────────────────────────
+images  = dir(fullfile(fileParams.topDir, fileParams.imgDir, fileParams.imgReg));
+nFrames = length(images);
 
-    images = dir(fullfile(fileParams.topDir, fileParams.imgDirPos,fileParams.imgReg));
-    nFrames = length(images);
+for frame = 1:nFrames
+ 
+    im    = imread(fullfile(images(frame).folder, images(frame).name));
+    red   = im(:,:,2);   % particle shape channel
+    green = im(:,:,2);   % photoelastic (force) channel
+ 
+    % Suppress green bleed-through (same correction as original PeGS2)
+    % red = imsubtract(red, green * 0.05);
     
+    imshow(red);
+    imwrite(red, 'red.png');
 
-    for frame = 1:nFrames
-
-        im = imread(fullfile(images(frame).folder,images(frame).name)); %read image
-        
-        % Resize the image for processing
-        im = imresize(im, 0.25);
-
-        %get red channel for particle detection
-        red = im(:,:,1); %particles
-        green = im(:,:,2); %photoelastic signal
-        blue = im(:,:,3);
-        red = imsubtract(red, green*0.05); %some green bleeds through, makes sharper red
-        
-        imshow(red);
-
-        %circle detection
-        [centers, radii, ~] = imfindcircles(red,pdParams.radiusRange,'ObjectPolarity','dark','Method','TwoStage','Sensitivity',pdParams.sensitivity);%, 'EdgeThreshold',p.edgeThresh);
-
-        %classify edge particles
-        if pdParams.boundaryType == "rectangle"
-            
-            lpos = min(centers(:,1)-radii);
-            rpos = max(centers(:,1)+radii);
-            upos = max(centers(:,2)+radii);
-            bpos = min(centers(:,2)-radii);
-            lwi = centers(:,1)-radii <= lpos+pdParams.dtol;
-            rwi = centers(:,1)+radii >= rpos-pdParams.dtol;
-            uwi = centers(:,2)+radii >= upos-pdParams.dtol;
-            bwi = centers(:,2)-radii <= bpos+pdParams.dtol; %need to add edge case of corner particle
-
-            edges = zeros(length(radii), 1);
-            edges(rwi) = 1; %right
-            edges(lwi) = -1; %left
-            edges(uwi) = 2;  %"upper" - as vertical pixels are backwards from cartesian, actually bottom of image
-            edges(bwi) = -2; %"bottom" - see above comment
-            %interior particles are 0
-        end %for edge detection
-        
-        %display circles
-        if verbose == true
-            imshow(red);
-            viscircles(centers, radii);
-            hold on
-            str=string(edges);
-            text(centers(:,1), centers(:,2),str,'Color','red','FontSize',14)
-            drawnow;
-            hold off
-        end
-
-
-        %make matrix of positions x ,y, radii, edge classification
-
-        %% angepasst weil durch bild mit 0.25 skaliert oben
-        particle = [centers(:,1)*4, centers(:,2)*4, radii*4, edges]; 
-
-        %save to text file
-
-        txtfilename=[images(frame).name(1:end-4), '_centers.txt'];
-        writematrix(particle, fullfile(fileParams.topDir, fileParams.particleDir,txtfilename), 'delimiter',',')
-
-    end %end for loop over images
-
-
-
-
-%save sample image if verbose
-    if verbose == true
-        imfilename=['Centers_',images(frame).name];
-        saveas(gcf,fullfile(fileParams.topDir, fileParams.particleDir,imfilename),'jpg')
+    % ── Binarise ──────────────────────────────────────────────────────────
+    switch lower(pdParams.threshMethod)
+        case 'adaptive'
+            T  = adaptthresh(red, pdParams.adaptSens, 'ForegroundPolarity', 'bright');
+            bw = imbinarize(red, T);
+        case 'otsu'
+            bw = imbinarize(red);   % Otsu global threshold
+        otherwise
+            error('Unknown threshMethod: %s', pdParams.threshMethod);
     end
 
-%% saving parameters in and finishing module
+    imshow(bw);
+    imwrite(bw, 'bw_0.png');
+ 
+    % ── Morphological cleaning ────────────────────────────────────────────
+    % Remove small noise blobs (area < pi*rmin^2 / 2 as conservative limit)
+    minArea = pi * pdParams.radiusRange(1)^2 / 2;
+    bw      = bwareaopen(bw, round(minArea));
+ 
+    imshow(bw);
+    imwrite(bw, 'bw_1.png');
 
+    if pdParams.fillHoles
+        bw = imfill(bw, 'holes');
+    end
+    
+    imshow(bw);
+    imwrite(bw, 'bw_2.png');
+
+    % ── Measure blob properties ───────────────────────────────────────────
+    stats = regionprops(bw, ...
+        'Centroid', ...
+        'MajorAxisLength', ...
+        'MinorAxisLength', ...
+        'Orientation', ...
+        'Solidity', ...
+        'Area', ...
+        'BoundingBox');
+ 
+    % ── Filter blobs by radius range and solidity ────────────────────────
+
+    nParticles = numel(stats);
+ 
+    if nParticles == 0
+        warning('Frame %d (%s): no particles found — check radiusRange and threshold.', ...
+            frame, images(frame).name);
+    end
+ 
+    % ── Collect results ───────────────────────────────────────────────────
+    centers = zeros(nParticles, 2);
+    radii   = zeros(nParticles, 1);
+    a_semi  = zeros(nParticles, 1);   % semi-major axis (pixels)
+    b_semi  = zeros(nParticles, 1);   % semi-minor axis (pixels)
+    orient  = zeros(nParticles, 1);   % orientation (degrees)
+ 
+    for k = 1:nParticles
+        centers(k,:) = stats(k).Centroid;                           % [x, y]
+        a_semi(k)    = stats(k).MajorAxisLength / 2;
+        b_semi(k)    = stats(k).MinorAxisLength / 2;
+        orient(k)    = stats(k).Orientation;
+        radii(k)     = (a_semi(k) + b_semi(k)) / 2;                % effective r
+    end
+ 
+    % ── Edge classification (identical logic to original) ─────────────────
+    edges = zeros(nParticles, 1);
+ 
+    if nParticles > 0 && strcmpi(pdParams.boundaryType, 'rectangle')
+        lpos = min(centers(:,1) - radii);
+        rpos = max(centers(:,1) + radii);
+        upos = max(centers(:,2) + radii);
+        bpos = min(centers(:,2) - radii);
+ 
+        edges(centers(:,1) - radii <= lpos + pdParams.dtol)  = -1;  % left
+        edges(centers(:,1) + radii >= rpos - pdParams.dtol)  =  1;  % right
+        edges(centers(:,2) + radii >= upos - pdParams.dtol)  =  2;  % upper (bottom of image)
+        edges(centers(:,2) - radii <= bpos + pdParams.dtol)  = -2;  % lower (top of image)
+    end
+ 
+    % ── Verbose: draw ellipses over image ─────────────────────────────────
+    if verbose && nParticles > 0
+        figure('Name', sprintf('Frame %d — ellipse fit', frame), 'NumberTitle', 'off');
+        imshow(red);
+        hold on;
+ 
+        for k = 1:nParticles
+            drawEllipse(centers(k,1), centers(k,2), a_semi(k), b_semi(k), orient(k), ...
+                        'Color', 'cyan', 'LineWidth', 1.5);
+ 
+            % Mark centre
+            plot(centers(k,1), centers(k,2), '+', ...
+                'Color', 'yellow', 'MarkerSize', 10, 'LineWidth', 1.5);
+ 
+            % Annotate with numerical values
+            label = sprintf('(%.1f, %.1f)\nr=%.1f\na=%.1f b=%.1f\ne=%.2f', ...
+                centers(k,1), centers(k,2), radii(k), a_semi(k), b_semi(k), ...
+                sqrt(1 - (min(a_semi(k),b_semi(k)) / max(a_semi(k),b_semi(k)))^2));
+ 
+            text(centers(k,1) + radii(k)*0.15, centers(k,2) - radii(k)*0.6, ...
+                label, 'Color', 'yellow', 'FontSize', 8, ...
+                'BackgroundColor', [0 0 0 0.4], 'Interpreter', 'none');
+ 
+            % Edge flag
+            edgeStr = edgeFlagString(edges(k));
+            text(centers(k,1), centers(k,2) + radii(k)*0.7, edgeStr, ...
+                'Color', 'red', 'FontSize', 10, 'FontWeight', 'bold', ...
+                'HorizontalAlignment', 'center');
+        end
+ 
+        title(sprintf('%s  —  %d particle(s) detected', ...
+            strrep(images(frame).name, '_', '\_'), nParticles));
+        hold off;
+        drawnow;
+    end
+ 
+    % ── Save image with overlays ───────────────────────────────────────────
+    if verbose && nParticles > 0
+        imfilename = ['EllipseFit_', images(frame).name];
+        saveas(gcf, fullfile(fileParams.topDir, fileParams.particleDir, imfilename), 'jpg');
+    end
+ 
+    % ── Write centres text file (same format as original) ─────────────────
+    particle     = [centers(:,1), centers(:,2), radii, edges];
+    txtfilename  = [images(frame).name(1:end-4), '_centers.txt'];
+    writematrix(particle, ...
+        fullfile(fileParams.topDir, fileParams.particleDir, txtfilename), ...
+        'Delimiter', ',');
+ 
+    % ── Print per-particle summary to command window ──────────────────────
+    if verbose
+        fprintf('\n  Frame %d / %d  —  %s\n', frame, nFrames, images(frame).name);
+        fprintf('  %-4s  %-9s  %-9s  %-8s  %-8s  %-8s  %-8s  %-5s\n', ...
+            '#', 'X (px)', 'Y (px)', 'r_eff', 'a (px)', 'b (px)', 'orient', 'edge');
+        fprintf('  %s\n', repmat('-', 1, 62));
+        for k = 1:nParticles
+            fprintf('  %-4d  %-9.2f  %-9.2f  %-8.2f  %-8.2f  %-8.2f  %-8.1f  %s\n', ...
+                k, centers(k,1), centers(k,2), radii(k), ...
+                a_semi(k), b_semi(k), orient(k), edgeFlagString(edges(k)));
+        end
+    end
+ 
+end % end frame loop
+
+
+%% ── Save parameters ──────────────────────────────────────────────────────
 fields = fieldnames(pdParams);
 for i = 1:length(fields)
     fileParams.(fields{i}) = pdParams.(fields{i});
 end
-
-fileParams.lastimagename=images(frame).name;
-fileParams.time = datetime("now");
+fileParams.lastimagename = images(frame).name;
+fileParams.time          = datetime('now');
+ 
 fields = fieldnames(fileParams);
-C=struct2cell(fileParams);
-pdParams = [fields C];
-writecell(pdParams,fullfile(fileParams.topDir, fileParams.particleDir,'particleDetect_params.txt'),'Delimiter','tab')
-
-
-if verbose 
-        disp('done with particleDetect()');
+C      = struct2cell(fileParams);
+pdCell = [fields C];
+writecell(pdCell, ...
+    fullfile(fileParams.topDir, fileParams.particleDir, 'particleDetect_params.txt'), ...
+    'Delimiter', 'tab');
+ 
+if verbose
+    disp('done with particleDetect_ellipse()');
 end
-
+ 
 out = true;
+end % end main function
 
+
+%% ═══════════════════════════════════════════════════════════════════════
+%  Helper: draw a rotated ellipse onto the current axes
+%  cx, cy  : centre (pixels, image coords)
+%  a, b    : semi-major and semi-minor axes (pixels)
+%  phi_deg : orientation angle from regionprops (degrees, CCW from x-axis)
+% ════════════════════════════════════════════════════════════════════════
+function drawEllipse(cx, cy, a, b, phi_deg, varargin)
+    t   = linspace(0, 2*pi, 360);
+    phi = deg2rad(phi_deg);
+ 
+    % Parametric ellipse, then rotate by phi
+    xe = a * cos(t);
+    ye = b * sin(t);
+ 
+    xr = cx + xe * cos(phi) - ye * sin(phi);
+    yr = cy - xe * sin(phi) - ye * cos(phi);  % minus: image y increases downward
+ 
+    plot(xr, yr, varargin{:});
 end
+
+
+%% ═══════════════════════════════════════════════════════════════════════
+%  Helper: human-readable edge flag
+% ════════════════════════════════════════════════════════════════════════
+function s = edgeFlagString(flag)
+    switch flag
+        case  0,  s = 'interior';
+        case  1,  s = 'right';
+        case -1,  s = 'left';
+        case  2,  s = 'upper';
+        case -2,  s = 'lower';
+        otherwise, s = '?';
+    end
+end
+ 
+ 
+%% 
 
 %% defaults for particleDetectModule
 function p = paramsSetUp(p)
@@ -177,9 +297,25 @@ if isfield(p,'sensitivity') == 0
     p.sensitivity = 0.945;
 end
 
-
-
-if isfield(p,'edgeThresh') == 0
-    p.edgeThresh = 0.02;
+% Fill interior holes before fitting (recommended for fringe patterns)
+if ~isfield(p, 'fillHoles')
+    p.fillHoles = true;
 end
+
+% Minimum blob solidity to accept as a particle (0–1)
+if ~isfield(p, 'minSolidity')
+    p.minSolidity = 0.70;
 end
+
+% Thresholding strategy: 'adaptive' | 'otsu'
+if ~isfield(p, 'threshMethod')
+    p.threshMethod = 'otsu';
+end
+
+% Sensitivity for adaptthresh (ignored when threshMethod is 'otsu')
+if ~isfield(p, 'adaptSens')
+    p.adaptSens = 0.55;
+end
+
+end
+

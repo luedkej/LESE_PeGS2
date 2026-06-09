@@ -1,4 +1,4 @@
-topDir	C:\Users\Jakob\ETH\Reasearch_Assistance_LESE\repos\PeGS2_Robin\	
+topDir	C:\Users\Jakob\ETH\Reasearch_Assistance_LESE\repos\LESE_PeGS2\	
 imgDirPos	images_pos	
 imgDir	images	
 particleDir	particles	
@@ -16,4 +16,4 @@ CR	10
 imadjust_limits	0	0.8
 rednormal	2	
 figverbose	1	
-time	09-Jun-2026 14:34:18	
+time	09-Jun-2026 15:48:47	

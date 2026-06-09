@@ -1,7 +1,7 @@
   %% a sample runscript showing all of the module parameters
 
 %% file parameters
-fileParams.topDir = 'C:\Users\Jakob\ETH\Reasearch_Assistance_LESE\repos\PeGS2_Robin\'; % where the top directory of the data will be stored
+fileParams.topDir = 'C:\Users\Jakob\ETH\Reasearch_Assistance_LESE\repos\LESE_PeGS2\'; % where the top directory of the data will be stored
 
 fileParams.imgDirPos    = 'images_pos';   % Ordner für Teilchenerkennung
 fileParams.imgDir       = 'images';     % Ordner für Kraft-Fringes (Grün-Kanal)
