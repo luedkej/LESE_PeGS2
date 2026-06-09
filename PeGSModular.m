@@ -85,18 +85,18 @@ particleDetect(fileParams, pdParams, verbose);
 % same id, set parameters with ptParams
 
 
-%particleTrack(fileParams, ptParams, verbose);
+% particleTrack(fileParams, ptParams, verbose);
 
 
 %% module to detect contacts between particles. Set parameters in cdParams structure
 
 
-% contactDetect(fileParams, cdParams, verbose);
+contactDetect(fileParams, cdParams, verbose);
 
 %% module to solve the forces on the particles. Set parameters in dsParams structure
 
 
-% diskSolve(fileParams, dsParams, verbose);
+diskSolve(fileParams, dsParams, verbose);
 
 
 %% module create an adjacency matrix for all images in the data file. Set parameters in amParams structure

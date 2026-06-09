@@ -18,5 +18,5 @@ threshMethod	adaptive
 adaptSens	0.55	
 adaptNeighbourhood	4000	
 closingRadius	7	
-lastimagename	IMG_0003.JPG	
-time	09-Jun-2026 17:56:31	
+lastimagename	IMG_0030.JPG	
+time	09-Jun-2026 19:37:45	
