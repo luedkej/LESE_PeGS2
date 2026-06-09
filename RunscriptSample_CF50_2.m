@@ -19,7 +19,7 @@ verbose = true; % do you want plots?
 %% particleDetect parameters
 
 pdParams.boundaryType = "rectangle";
-pdParams.radiusRange = [200 400]; %range in pixels to look for particles
+pdParams.radiusRange = [1000 2000]; %range in pixels to look for particles
 pdParams.dtol = 10; %classify edge particles with tolerance
 pdParams.sensitivity = 0.945; %sensitivity for Hough
 pdParams.edgeThresh = 0.02; %senstitivity for Hough

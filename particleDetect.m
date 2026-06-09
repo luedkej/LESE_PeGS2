@@ -7,7 +7,7 @@
 % 
 % 
 % **i/o**
-% The input of this module are experimental images. It is assumed that the image is RGB, the particles are detected using the red channel and the green channel contains the force information. 
+% The input of this module are experimental images. It is assumed that the image is RGB, the particles are detected using the green channel and the green channel contains the force information. 
 % 
 % **i** 
 % N input images
@@ -59,28 +59,51 @@ nFrames = length(images);
 
 for frame = 1:nFrames
  
-    im    = imread(fullfile(images(frame).folder, images(frame).name));
-    red   = im(:,:,2);   % particle shape channel
-    green = im(:,:,2);   % photoelastic (force) channel
+    im      = imread(fullfile(images(frame).folder, images(frame).name));
+    red     = im(:,:,1);   % photoelastic (force) channel
+    green   = im(:,:,2);   % particle shape channel
+    blue    = im(:,:,3);   % unused (background)
+    
  
     % Suppress green bleed-through (same correction as original PeGS2)
-    % red = imsubtract(red, green * 0.05);
+    % green = imsubtract(green, green * 0.05);
     
-    imshow(red);
+    imwrite(green, 'green.png');
+
     imwrite(red, 'red.png');
+
+    imwrite(blue, 'blue.png');
+
+
+    bw_test = green > 15;
+    imwrite(bw_test, 'bw_test.png');
 
     % ── Binarise ──────────────────────────────────────────────────────────
     switch lower(pdParams.threshMethod)
         case 'adaptive'
-            T  = adaptthresh(red, pdParams.adaptSens, 'ForegroundPolarity', 'bright');
-            bw = imbinarize(red, T);
+            T  = adaptthresh(green, pdParams.adaptSens, ...
+                            'ForegroundPolarity', 'bright', ...
+                            'NeighborhoodSize',   2*floor(pdParams.adaptNeighbourhood/2)+1);
+            bw = imbinarize(green, T);
         case 'otsu'
-            bw = imbinarize(red);   % Otsu global threshold
+            bw = imbinarize(green);   % Otsu global threshold
+        case 'green_twopass'
+        % Coarse pass: Otsu to get approximate particle blobs
+        bw_coarse = imfill(imbinarize(channel), 'holes');
+        bw_coarse = bwareaopen(bw_coarse, round(pi * pdParams.radiusRange(1)^2 / 4));
+        % Dilate coarse mask to capture dark stress-free edge band
+        se_d = strel('disk', round(pdParams.radiusRange(2) * 0.15));
+        mask = imdilate(bw_coarse, se_d);
+        % Fine pass: adaptive threshold, restricted to mask region
+        T  = adaptthresh(channel, pdParams.adaptSens, ...
+             'ForegroundPolarity', 'bright', ...
+             'NeighborhoodSize', 2*floor(pdParams.adaptNeighbourhood/2)+1);
+        bw = imbinarize(channel, T);
+        bw = (bw | bw_coarse) & mask;   % union inside dilated region
         otherwise
             error('Unknown threshMethod: %s', pdParams.threshMethod);
     end
 
-    imshow(bw);
     imwrite(bw, 'bw_0.png');
  
     % ── Morphological cleaning ────────────────────────────────────────────
@@ -88,18 +111,16 @@ for frame = 1:nFrames
     minArea = pi * pdParams.radiusRange(1)^2 / 2;
     bw      = bwareaopen(bw, round(minArea));
  
-    imshow(bw);
     imwrite(bw, 'bw_1.png');
 
     if pdParams.fillHoles
         bw = imfill(bw, 'holes');
     end
     
-    imshow(bw);
     imwrite(bw, 'bw_2.png');
 
     % ── Measure blob properties ───────────────────────────────────────────
-    stats = regionprops(bw, ...
+    stats = regionprops(bw_test, ...
         'Centroid', ...
         'MajorAxisLength', ...
         'MinorAxisLength', ...
@@ -109,6 +130,16 @@ for frame = 1:nFrames
         'BoundingBox');
  
     % ── Filter blobs by radius range and solidity ────────────────────────
+    keep = false(numel(stats), 1);
+    for k = 1:numel(stats)
+        r_eff = (stats(k).MajorAxisLength + stats(k).MinorAxisLength) / 4;
+        if r_eff >= pdParams.radiusRange(1) && ...
+           r_eff <= pdParams.radiusRange(2) && ...
+           stats(k).Solidity >= pdParams.minSolidity
+            keep(k) = true;
+        end
+    end
+    stats = stats(keep);
 
     nParticles = numel(stats);
  
@@ -150,7 +181,7 @@ for frame = 1:nFrames
     % ── Verbose: draw ellipses over image ─────────────────────────────────
     if verbose && nParticles > 0
         figure('Name', sprintf('Frame %d — ellipse fit', frame), 'NumberTitle', 'off');
-        imshow(red);
+        imshow(green);
         hold on;
  
         for k = 1:nParticles
@@ -173,7 +204,7 @@ for frame = 1:nFrames
             % Edge flag
             edgeStr = edgeFlagString(edges(k));
             text(centers(k,1), centers(k,2) + radii(k)*0.7, edgeStr, ...
-                'Color', 'red', 'FontSize', 10, 'FontWeight', 'bold', ...
+                'Color', 'green', 'FontSize', 10, 'FontWeight', 'bold', ...
                 'HorizontalAlignment', 'center');
         end
  
@@ -282,7 +313,7 @@ end
 
 %set radius range
 if isfield(p,'radiusRange') == 0
-    p.radiusRange = [45 80];
+    p.radiusRange = [1000 2000];
 end
 
 
@@ -309,12 +340,24 @@ end
 
 % Thresholding strategy: 'adaptive' | 'otsu'
 if ~isfield(p, 'threshMethod')
-    p.threshMethod = 'otsu';
+    p.threshMethod = 'adaptive';
 end
 
 % Sensitivity for adaptthresh (ignored when threshMethod is 'otsu')
 if ~isfield(p, 'adaptSens')
     p.adaptSens = 0.55;
+end
+
+% Neighbourhood for adaptthresh (pixels). 
+% Rule of thumb: ~2x expected particle diameter.
+if ~isfield(p, 'adaptNeighbourhood')
+    p.adaptNeighbourhood = 4000;   % must be odd; will be forced odd automatically
+end
+
+% Morphological closing radius (pixels) to bridge dark edge gaps.
+% 0 = disabled.
+if ~isfield(p, 'closingRadius')
+    p.closingRadius = 7;
 end
 
 end

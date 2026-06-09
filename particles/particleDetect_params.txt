@@ -8,13 +8,15 @@ adjacencyDir	adjacency
 imgReg	*.JPG	
 frameIdInd	8	
 boundaryType	rectangle	
-radiusRange	200	400
+radiusRange	1000	2000
 dtol	10	
 sensitivity	0.945	
 edgeThresh	0.02	
 fillHoles	1	
 minSolidity	0.7	
-threshMethod	otsu	
+threshMethod	adaptive	
 adaptSens	0.55	
+adaptNeighbourhood	4000	
+closingRadius	7	
 lastimagename	IMG_0003.JPG	
-time	09-Jun-2026 17:02:59	
+time	09-Jun-2026 17:56:31	
