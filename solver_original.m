@@ -39,16 +39,27 @@ N = length(particle);
             [x,y]=meshgrid(-(cx-1):(ix-cx),-(cy-1):(iy-cy));
             c_mask=((x.^2+y.^2)<=r^2);   
 
-            %% Least squares fitting
+           %% Least squares fitting
             % Set up initial values
             p0 = zeros(2*z, 1);
             p0(1:z) = forces;
             p0(z+1:2*z) = alphas;
-
+            
+            % Define Bounds: Enforce positive forces, and keep alpha within [-pi/2, pi/2]
+            lb = zeros(2*z, 1);
+            lb(1:z) = 0;               % Minimum force is 0 (No negative forces allowed!)
+            lb(z+1:2*z) = -pi/2;       % Minimum alpha angle
+            
+            ub = zeros(2*z, 1);
+            ub(1:z) = Inf;             % Maximum force can be infinitely high
+            ub(z+1:2*z) = pi/2;        % Maximum alpha angle
+            
             % Fitting functions
             func = @(par) fringe_pattern_original(z, par(1:z),par(z+1:z+z), beta(1:z), fsigma, rm, px); 
             err = @(par) real(sum(sum( ( c_mask.*(template-func(par)).^2) ))); 
-            p = lsqnonlin(err,p0,[],[],fitoptions);
+            
+            % Pass lb and ub to the solver
+            p = lsqnonlin(err, p0, lb, ub, fitoptions);
 
             % Extract fitting outputs
             forces = p(1:z);

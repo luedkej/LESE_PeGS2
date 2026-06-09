@@ -270,18 +270,25 @@ for imgnumb = 1:size(files,1)
             elseif circs(disk,4) == -2
                 contacts = -pi/2;
             end
-            if particle(disk).edge ~=0
+            
+            %% changed to hardcoding the contactpoints left and right
+            if true        %particle(disk).edge ~=0
                 x = particle(disk).x;
                 y = particle(disk).y;
                 r = particle(disk).r;
-                for c =1:length(contacts) %technically doesn't need to be a loop but we will keep it for alternate scenarios
-                    [contactG2p, contactIp]= contactspotwall(x, y, r, cdParams.CR, contacts(c),Gimg, maskCR);
+
+                test_contacts = [0, pi]; %hardcoding the contact
+                %in the loop below 3 times test_code inputed instead of
+                %contacts
+
+                for c =1:length(test_contacts) %technically doesn't need to be a loop but we will keep it for alternate scenarios
+                    [contactG2p, contactIp]= contactspotwall(x, y, r, cdParams.CR, test_contacts(c),Gimg, maskCR);
                     if(contactG2p > cdParams.contactG2Threshold)
                         particle(disk).z= particle(disk).z +1; %increase coordination number
                         particle(disk).contactG2s(particle(disk).z)=contactG2p;
                         particle(disk).contactIs(particle(disk).z)=contactIp;
                         particle(disk).neighbours(particle(disk).z) = -1; %the wall is now noted as a neigbour in the particle l datastructure
-                        particle(disk).betas(particle(disk).z) = contacts(c); %the contact angle to the wall is now noted in the particle l datastructure
+                        particle(disk).betas(particle(disk).z) = test_contacts(c); %the contact angle to the wall is now noted in the particle l datastructure
                         particle(disk).color(particle(disk).z)='g';
                         %     else
                     end

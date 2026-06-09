@@ -55,7 +55,7 @@ function out = particleDetect(fileParams, pdParams, verbose)
 
 %% IMPORT DATA & BEGIN ANALYSIS
 
-    images = dir(fullfile(fileParams.topDir, fileParams.imgDir,fileParams.imgReg));
+    images = dir(fullfile(fileParams.topDir, fileParams.imgDirPos,fileParams.imgReg));
     nFrames = length(images);
     
 
@@ -63,13 +63,19 @@ function out = particleDetect(fileParams, pdParams, verbose)
 
         im = imread(fullfile(images(frame).folder,images(frame).name)); %read image
         
+        % Resize the image for processing
+        im = imresize(im, 0.25);
+
         %get red channel for particle detection
         red = im(:,:,1); %particles
         green = im(:,:,2); %photoelastic signal
+        blue = im(:,:,3);
         red = imsubtract(red, green*0.05); %some green bleeds through, makes sharper red
+        
+        imshow(red);
 
         %circle detection
-        [centers, radii, ~] = imfindcircles(red,pdParams.radiusRange,'ObjectPolarity','bright','Method','TwoStage','Sensitivity',pdParams.sensitivity);%, 'EdgeThreshold',p.edgeThresh);
+        [centers, radii, ~] = imfindcircles(red,pdParams.radiusRange,'ObjectPolarity','dark','Method','TwoStage','Sensitivity',pdParams.sensitivity);%, 'EdgeThreshold',p.edgeThresh);
 
         %classify edge particles
         if pdParams.boundaryType == "rectangle"
@@ -104,7 +110,9 @@ function out = particleDetect(fileParams, pdParams, verbose)
 
 
         %make matrix of positions x ,y, radii, edge classification
-        particle = [centers(:,1), centers(:,2), radii, edges];
+
+        %% angepasst weil durch bild mit 0.25 skaliert oben
+        particle = [centers(:,1)*4, centers(:,2)*4, radii*4, edges]; 
 
         %save to text file
 
@@ -119,7 +127,7 @@ function out = particleDetect(fileParams, pdParams, verbose)
 %save sample image if verbose
     if verbose == true
         imfilename=['Centers_',images(frame).name];
-        saveas(gcf,fullfile(fileParams.topDir, fileParams.particleDir,imfilename))
+        saveas(gcf,fullfile(fileParams.topDir, fileParams.particleDir,imfilename),'jpg')
     end
 
 %% saving parameters in and finishing module

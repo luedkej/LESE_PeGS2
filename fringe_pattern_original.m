@@ -2,6 +2,9 @@ function img = fringe_pattern_original(z, f, alpha, beta, fsigma, rm, px)
 
     %make sure the forces are balanced
     [alpha,f] = forceBalance(f,alpha,beta);
+    
+    % Ensure size dimensions are strictly rounded integers
+    px = int32(round(px));
 
     %create an empty placeholder image for our result/return value
     img = zeros(px);
@@ -18,3 +21,4 @@ function img = fringe_pattern_original(z, f, alpha, beta, fsigma, rm, px)
         img(x,:)=xRow; 
     end
 end
+

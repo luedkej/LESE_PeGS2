@@ -56,7 +56,7 @@ centers = nan(nFrames*skipamount, 6); %this is the big array where we store the 
 %initialize array and particle ids with first dataset
 ids = (1:length(par_ref))';
 par_ref = cat(2,ids, par_ref); 
-centers(1:length(par_ref),:)=cat(2,ones(length(par_ref),1)*frameId, par_ref); 
+centers(1:lenght(par_ref),:)=cat(2,ones(length(par_ref),1)*frameId, par_ref); 
 
 
 
@@ -84,7 +84,7 @@ for i = 1:numel(datafiles)-1
         viscircles(par_ref(:,2:3), par_ref(:,4));
         hold on;
         viscircles(par_curr(:,2:3), par_curr(:,4), 'Color', 'b');
-        for z = 1:size(par_curr, 1)
+        for z = 1:length(par_curr)
             text(par_curr(z, 2), par_curr(z, 3), num2str(tracked(z)), 'Color', 'white');
         end
         axis('equal')
@@ -101,7 +101,7 @@ for i = 1:numel(datafiles)-1
         frameId = i+1;
     end
     
-    if size(par_curr, 1) > skipamount
+    if length(par_curr) > skipamount
         error('skipvalue is not large enough, please increase')
     end %double check that the skip amount is large enough and not going to overwrite other data
     
