@@ -7,4 +7,4 @@ adjacencyDir	adjacency
 imgReg	*.jpg
 frameIdInd	8
 skipValue	20
-time	09-Mar-2026 18:36:33
+time	08-Jun-2026 15:35:40

@@ -11,5 +11,5 @@ radiusRange	45	80
 dtol	10	
 sensitivity	0.945	
 edgeThresh	0.02	
-lastimagename	Step09-0004.jpg	
-time	09-Mar-2026 18:36:31	
+lastimagename	Step09-0001.jpg	
+time	08-Jun-2026 15:35:38	

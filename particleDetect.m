@@ -22,7 +22,7 @@
 % The user set parameters are held inside of the structure <pdParams> in the main function (PeGSModular) and as <p> in the particleDetect function. The fields self populate if not set by the user with default values (done in the function paramsSetUp). The parameters are
 % - `boundaryType` : shape of the boundary holding the particles, this is for identifying edge particles
 % - `radiusRange`: an array consisting of the lower and upper radius bounds for the particles (pixels)
-% - `dtol` : the distance tolerance (pixels) between the edge of the particle and the wall to be assigned as as edge
+% - `dtol` : the distance tolerance (pixels) between the edge of the particle and the wall to be assigned as edge
 % - `sensitivity` : the sensitivity to for circle finding. Higher sensitivity == find more circles
 % - `edgeThresh` : to assign what is the edge of an object in the image (note: not the same edge as the edge flag, and this is set inside the main function after the image has been loaded)
 % 

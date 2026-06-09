@@ -1,14 +1,14 @@
   %% a sample runscript showing all of the module parameters
 
 %% file parameters
-fileParams.topDir = './testdata/'; % where the top directory of the data will be stored
-fileParams.imgDir = 'images'; % where the images are saved
-fileParams.particleDir = 'particles'; %output directory for particle information
-fileParams.contactDir = 'contacts'; % output directory for contact information
-fileParams.solvedDir = 'solved'; % output directory for solved force information
+fileParams.topDir       = './testdata/'; % where the top directory of the data will be stored
+fileParams.imgDir       = 'images'; % where the images are saved
+fileParams.particleDir  = 'particles'; %output directory for particle information
+fileParams.contactDir   = 'contacts'; % output directory for contact information
+fileParams.solvedDir    = 'solved'; % output directory for solved force information
 fileParams.adjacencyDir = 'adjacency'; % adjacency list directory
-fileParams.imgReg = '*.jpg'; %image format and regex
-fileParams.frameIdInd = 8; %the index in the file names where sequential numbering starts, optional, remove if unwanted or if naming conventions are irregular
+fileParams.imgReg       = '*.jpg'; %image format and regex
+fileParams.frameIdInd   = 8; %the index in the file names where sequential numbering starts, optional, remove if unwanted or if naming conventions are irregular
 
 %% verbose
 verbose = true; % do you want plots?
@@ -16,25 +16,25 @@ verbose = true; % do you want plots?
 %% particleDetect parameters
 
 pdParams.boundaryType = "rectangle";
-pdParams.radiusRange = [45 80]; %range in pixels to look for particles
-pdParams.dtol = 10; %classify edge particles with tolerance
-pdParams.sensitivity = 0.945; %sensitivity for Hough
-pdParams.edgeThresh = 0.02; %senstitivity for Hough
+pdParams.radiusRange  = [45 80]; %range in pixels to look for particles
+pdParams.dtol         = 10; %classify edge particles with tolerance
+pdParams.sensitivity  = 0.945; %sensitivity for Hough
+pdParams.edgeThresh   = 0.02; %senstitivity for Hough
 
 %% particleTrack parameters
 ptParams.skipValue = 20; % padding for data array, I recommend ~10% of packing size, but it will give warning if it needs to be larger
 
 %% contactDetect parameters
 
-cdParams.metersperpixel = .007/160; %meters/pixel
-cdParams.fsigma = 140;  %photoelastic stress coefficient
-cdParams.g2cal = 100; %calibration Value for the g^2 method, can be computed by joG2cal.m (PEGS 1.0 version)
-cdParams.dtol = 10; %how far away can the outlines of 2 particles be to still be considered Neighbors
+cdParams.metersperpixel     = .007/160; %meters/pixel
+cdParams.fsigma             = 140;  %photoelastic stress coefficient
+cdParams.g2cal              = 100; %calibration Value for the g^2 method, can be computed by joG2cal.m (PEGS 1.0 version)
+cdParams.dtol               = 10; %how far away can the outlines of 2 particles be to still be considered Neighbors
 cdParams.contactG2Threshold = 0.5; %sum of g2 in a contact area larger than this determines a valid contact
-cdParams.CR = 10; %contact radius over which contact gradient is calculated
-cdParams.imadjust_limits = [0,0.65]; %adjust contrast in green channel
-cdParams.rednormal = 2; %fractional amount to subtract the red channel from the green channel (Rimg/rednormal)
-cdParams.figverbose = true; %show figures
+cdParams.CR                 = 10; %contact radius over which contact gradient is calculated
+cdParams.imadjust_limits    = [0,0.65]; %adjust contrast in green channel
+cdParams.rednormal          = 2; %fractional amount to subtract the red channel from the green channel (Rimg/rednormal)
+cdParams.figverbose         = true; %show figures
 
 %% diskSolve parameters
 
