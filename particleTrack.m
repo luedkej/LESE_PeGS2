@@ -84,7 +84,7 @@ for i = 1:numel(datafiles)-1
         viscircles(par_ref(:,2:3), par_ref(:,4));
         hold on;
         viscircles(par_curr(:,2:3), par_curr(:,4), 'Color', 'b');
-        for z = 1:size(par_curr, 1)
+        for z = 1:length(par_curr)
             text(par_curr(z, 2), par_curr(z, 3), num2str(tracked(z)), 'Color', 'white');
         end
         axis('equal')
@@ -101,7 +101,7 @@ for i = 1:numel(datafiles)-1
         frameId = i+1;
     end
     
-    if size(par_curr, 1) > skipamount
+    if length(par_curr) > skipamount
         error('skipvalue is not large enough, please increase')
     end %double check that the skip amount is large enough and not going to overwrite other data
     
@@ -123,6 +123,7 @@ if verbose %visualize particle tracks
     figure(2);
     refimages = dir(fullfile(fileParams.topDir, fileParams.imgDir, fileParams.imgReg));
     ref =imread(fullfile(refimages(1).folder, refimages(1).name));
+    %ref = imresize(ref, 0.25);
     imshow(ref)
     hold on;
     

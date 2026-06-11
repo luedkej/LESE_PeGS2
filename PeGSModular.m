@@ -78,14 +78,14 @@ end
 %% module to detect contacts between particles. Set parameters in cdParams structure
 
 particleDetect(fileParams, pdParams, verbose);
-
+%maybe not necessary for 1 particle
 
 %% particleTrack is optional. Comment out if you do not want the particles tracked from frame to frame
 % module to track particles and assign them from frame to frame with the
 % same id, set parameters with ptParams
 
 
-particleTrack(fileParams, ptParams, verbose);
+%particleTrack(fileParams, ptParams, verbose);
 
 
 %% module to detect contacts between particles. Set parameters in cdParams structure
@@ -102,7 +102,7 @@ diskSolve(fileParams, dsParams, verbose);
 %% module create an adjacency matrix for all images in the data file. Set parameters in amParams structure
 
 
-adjacencyMatrix(fileParams, amParams, verbose);
+%adjacencyMatrix(fileParams, amParams, verbose);
 
 return
 

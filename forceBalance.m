@@ -7,10 +7,15 @@ function [alpha,f] = forceBalance(force,alpha,beta)
           dbeta = (beta(1)-beta(2))/2;
           f(1)     = force(1);
           alpha(1) = acos(sin(dbeta));
+
+          %dbeta
+          
+
           if (alpha(1)>pi/2) 
                alpha(1)=acos(sin(-dbeta));
           end
-           if (isreal(alpha(1))==0) %for some reason, not sure why this happens
+          %alpha(1)
+           if (~isreal(alpha(1))) %for some reason, not sure why this happens
                alpha(1) = 0; %temproary fix is to set it zero then
                display('Warning: ForceBalance encountered a complex value in alpha where none was expected. Setting to 0 instead.');
            end       

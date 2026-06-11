@@ -1,0 +1,19 @@
+topDir	C:\Users\Jakob\ETH\Reasearch_Assistance_LESE\repos\LESE_PeGS2\	
+imgDirPos	images_pos	
+imgDir	images	
+particleDir	particles	
+contactDir	contacts	
+solvedDir	solved	
+adjacencyDir	adjacency	
+imgReg	*.JPG	
+frameIdInd	8	
+metersperpixel	2.63157894736842e-05	
+fsigma	157.5	
+g2cal	2605.7822	
+dtol	10	
+contactG2Threshold	0.01	
+CR	10	
+imadjust_limits	0	1
+rednormal	2	
+figverbose	1	
+time	11-Jun-2026 11:08:10	

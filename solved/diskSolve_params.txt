@@ -1,0 +1,18 @@
+topDir	C:\Users\Jakob\ETH\Reasearch_Assistance_LESE\repos\LESE_PeGS2\
+imgDirPos	images_pos
+imgDir	images
+particleDir	particles
+contactDir	contacts
+solvedDir	solved
+adjacencyDir	adjacency
+imgReg	*.JPG
+frameIdInd	8
+algorithm	levenberg-marquardt
+maxIterations	200
+maxFunctionEvaluations	400
+functionTolerance	0.01
+scaling	0.2
+maskradius	0.96
+original	1
+vectorise	0
+time	11-Jun-2026 15:08:43
