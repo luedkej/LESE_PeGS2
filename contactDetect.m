@@ -140,14 +140,15 @@ for imgnumb = 1:size(files,1)
 
         N = size(pData,1);
 
-        particle(1:N) = struct('id',0,'x',0,'y',0,'r',0,'rm',0,'color','','fsigma',0,'z',0,'forcescale',0,'g2',0,'forces',[],'fitError', [],'betas',[],'alphas',[],'neighbours',[],'contactG2s',[],'forceImage',[],  'edge', 0);
+        particle(1:N) = struct('id',0,'x',0,'y',0,'r',0,'rm',0,'color','','fsigma',0,'z',0,'forcescale',0,'g2',0,'forces',[],'fitError', [],'betas',[],'alphas',[],'neighbours',[],'contactG2s',[],'forceImage',[],  'edge_hori', 0, 'edge_vert', 0);
         
         for n = 1:N %Bookkeeping from centers-tracked
             particle(n).id= id(n);
             particle(n).x = pData(n,1);
             particle(n).y = pData(n,2);
             particle(n).r = round(pData(n,3));
-            particle(n).edge = pData(n, 4);
+            particle(n).edge_hori = pData(n, 4);
+            particle(n).edge_vert = pData(n, 5);
             particle(n).rm = particle(n).r*cdParams.metersperpixel;
             particle(n).fsigma = cdParams.fsigma;
         end
@@ -257,31 +258,45 @@ for imgnumb = 1:size(files,1)
 
         %Check if any of the walls is a neighbour as well
 
-        circs = [[particle.y]', [particle.x]', [particle.r]', [particle.edge]']; %Makes a circs matrix from old matrices
+        circs = [[particle.y]', [particle.x]', [particle.r]', [particle.edge_hori]', [particle.edge_vert]']; % Makes a circs matrix from old matrices
 
-        
         for disk = 1:length(particle)
             if circs(disk,4) == 1
-                contacts = 0;
+                contacts_hori = 0;
             elseif circs(disk,4) == -1
-                contacts = pi;
-            elseif circs(disk,4) == 2
-                contacts = pi/2;
-            elseif circs(disk,4) == -2
-                contacts = -pi/2;
+                contacts_hori = pi;
             end
-            if particle(disk).edge ~=0
+            if circs(disk,5) == 2
+                contacts_vert = pi/2;
+            elseif circs(disk,5) == -2
+                contacts_vert = -pi/2;
+            end
+            if particle(disk).edge_hori ~=0
                 x = particle(disk).x;
                 y = particle(disk).y;
                 r = particle(disk).r;
-                for c =1:length(contacts) %technically doesn't need to be a loop but we will keep it for alternate scenarios
-                    [contactG2p, contactIp]= contactspotwall(x, y, r, cdParams.CR, contacts(c),Gimg, maskCR);
+                for c =1:length(contacts_hori) %technically doesn't need to be a loop but we will keep it for alternate scenarios
+                    [contactG2p, contactIp]= contactspotwall(x, y, r, cdParams.CR, contacts_hori(c),Gimg, maskCR);
                     if(contactG2p > cdParams.contactG2Threshold)
                         particle(disk).z= particle(disk).z +1; %increase coordination number
                         particle(disk).contactG2s(particle(disk).z)=contactG2p;
                         particle(disk).contactIs(particle(disk).z)=contactIp;
                         particle(disk).neighbours(particle(disk).z) = -1; %the wall is now noted as a neigbour in the particle l datastructure
-                        particle(disk).betas(particle(disk).z) = contacts(c); %the contact angle to the wall is now noted in the particle l datastructure
+                        particle(disk).betas(particle(disk).z) = contacts_hori(c); %the contact angle to the wall is now noted in the particle l datastructure
+                        particle(disk).color(particle(disk).z)='g';
+                        %     else
+                    end
+                end
+            end
+            if particle(disk).edge_vert ~= 0
+                for c =1:length(contacts_vert) %technically doesn't need to be a loop but we will keep it for alternate scenarios
+                    [contactG2p, contactIp]= contactspotwall(x, y, r, cdParams.CR, contacts_vert(c),Gimg, maskCR);
+                    if(contactG2p > cdParams.contactG2Threshold)
+                        particle(disk).z= particle(disk).z +1; %increase coordination number
+                        particle(disk).contactG2s(particle(disk).z)=contactG2p;
+                        particle(disk).contactIs(particle(disk).z)=contactIp;
+                        particle(disk).neighbours(particle(disk).z) = -1; %the wall is now noted as a neigbour in the particle l datastructure
+                        particle(disk).betas(particle(disk).z) = contacts_vert(c); %the contact angle to the wall is now noted in the particle l datastructure
                         particle(disk).color(particle(disk).z)='g';
                         %     else
                     end

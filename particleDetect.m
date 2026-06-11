@@ -87,12 +87,16 @@ function out = particleDetect(fileParams, pdParams, verbose)
             rwi = centers(:,1)+radii >= rpos-pdParams.dtol;
             uwi = centers(:,2)+radii >= upos-pdParams.dtol;
             bwi = centers(:,2)-radii <= bpos+pdParams.dtol; %need to add edge case of corner particle
+            
+            % Include the case where a particle has 2 wall contacts
 
-            edges = zeros(length(radii), 1);
-            edges(rwi) = 1; %right
-            edges(lwi) = -1; %left
-            edges(uwi) = 2;  %"upper" - as vertical pixels are backwards from cartesian, actually bottom of image
-            edges(bwi) = -2; %"bottom" - see above comment
+            edges = zeros(length(centers), 2);
+
+            edges(rwi, 1) = 1;   % right wall:  col 1
+            edges(lwi, 1) = -1;  % left wall:   col 1
+            edges(uwi, 2) = 2;   % upper wall:  col 2
+            edges(bwi, 2) = -2;  % lower wall:  col 2
+
             %interior particles are 0
         end %for edge detection
         
@@ -101,7 +105,7 @@ function out = particleDetect(fileParams, pdParams, verbose)
             imshow(red);
             viscircles(centers, radii);
             hold on
-            str=string(edges);
+            str=string(edges(:,1)) + string(edges(:,2));
             text(centers(:,1), centers(:,2),str,'Color','red','FontSize',14)
             drawnow;
             hold off
@@ -111,7 +115,7 @@ function out = particleDetect(fileParams, pdParams, verbose)
         %make matrix of positions x ,y, radii, edge classification
 
         %% angepasst weil durch bild mit 0.25 skaliert oben
-        particle = [centers(:,1)*4, centers(:,2)*4, radii*4, edges]; 
+        particle = [centers(:,1)*4, centers(:,2)*4, radii*4, edges(:,1), edges(:,2)]; 
 
         %save to text file
 
@@ -119,8 +123,6 @@ function out = particleDetect(fileParams, pdParams, verbose)
         writematrix(particle, fullfile(fileParams.topDir, fileParams.particleDir,txtfilename), 'delimiter',',')
 
     end %end for loop over images
-
-
 
 
 %save sample image if verbose

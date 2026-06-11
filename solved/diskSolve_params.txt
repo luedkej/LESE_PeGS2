@@ -15,4 +15,4 @@ scaling	0.2
 maskradius	0.96
 original	1
 vectorise	0
-time	11-Jun-2026 15:08:43
+time	11-Jun-2026 16:50:35
