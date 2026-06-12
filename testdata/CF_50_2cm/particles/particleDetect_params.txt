@@ -8,9 +8,15 @@ adjacencyDir	adjacency
 imgReg	*.JPG	
 frameIdInd	8	
 boundaryType	rectangle	
-radiusRange	200	400
+radiusRange	1000	2000
 dtol	10	
 sensitivity	0.945	
 edgeThresh	0.02	
-lastimagename	IMG_0031.JPG	
-time	12-Jun-2026 19:55:37	
+fillHoles	1	
+minSolidity	0.7	
+threshMethod	adaptive	
+adaptSens	0.55	
+adaptNeighbourhood	4000	
+closingRadius	7	
+lastimagename	IMG_0030.JPG	
+time	12-Jun-2026 20:47:22	

@@ -17,7 +17,7 @@ verbose = true; % do you want plots?
 %% particleDetect parameters
 
 pdParams.boundaryType   = "rectangle";
-pdParams.radiusRange    = [200 400]; % range in pixels to look for particles
+pdParams.radiusRange    = [1000 2000]; % range in pixels to look for particles
 pdParams.dtol           = 10;         % classify edge particles with tolerance
 pdParams.sensitivity    = 0.945;      % sensitivity for Hough
 pdParams.edgeThresh     = 0.02;       % senstitivity for Hough
@@ -27,16 +27,16 @@ ptParams.skipValue = 20; % padding for data array, I recommend ~10% of packing s
 
 %% contactDetect parameters
 
-cdParams.metersperpixel   = 0.02/(2382); %meters/pixel
-cdParams.fsigma           = 157.5;  %photoelastic stress coefficient - Robin
-% cdParams.fsigma           = 32;  %photoelastic stress coefficient - Jakob
-cdParams.g2cal            = 2611.49; %calibration Value for the g^2 method, can be computed by joG2cal.m (PEGS 1.0 version)
-cdParams.dtol             = 10; %how far away can the outlines of 2 particles be to still be considered Neighbors
-cdParams.contactG2Threshold = 0.002; %sum of g2 in a contact area larger than this determines a valid contact
-cdParams.CR               = 10; %contact radius over which contact gradient is calculated
-cdParams.imadjust_limits  = [0,0.8]; %adjust contrast in green channel
-cdParams.rednormal        = 2; %fractional amount to subtract the red channel from the green channel (Rimg/rednormal)
-cdParams.figverbose       = true; %show figures
+cdParams.metersperpixel   = 0.02/(2382); % meters/pixel
+cdParams.fsigma           = 157.5;    % photoelastic stress coefficient - Robin
+% cdParams.fsigma           = 32;     % photoelastic stress coefficient - Jakob
+cdParams.g2cal            = 2611.49;  % calibration Value for the g^2 method, can be computed by joG2cal.m (PEGS 1.0 version)
+cdParams.dtol             = 10;       % how far away can the outlines of 2 particles be to still be considered Neighbors
+cdParams.contactG2Threshold = 0.002;  % sum of g2 in a contact area larger than this determines a valid contact
+cdParams.CR               = 10;       % contact radius over which contact gradient is calculated
+cdParams.imadjust_limits  = [0,0.8];  % adjust contrast in green channel
+cdParams.rednormal        = 2;        % fractional amount to subtract the red channel from the green channel (Rimg/rednormal)
+cdParams.figverbose       = true;     % show figures
 
 %% diskSolve parameters
 
