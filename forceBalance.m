@@ -10,7 +10,6 @@ function [alpha,f] = forceBalance(force,alpha,beta)
 
           %dbeta
           
-
           if (alpha(1)>pi/2) 
                alpha(1)=acos(sin(-dbeta));
           end
@@ -33,10 +32,12 @@ function [alpha,f] = forceBalance(force,alpha,beta)
              for i = 1:z
                  if(i~=k)
                  sum1 = sum1 + force(i)*sin(alpha(i)+beta(i)-beta(k));
+                 
                  sum2 = sum2 + force(i)*cos(alpha(i)+beta(i)-beta(k));
                  end
              end
              f(k) = sqrt(sum1^2+sum2^2);    
+             
              
            %%%BEGIN SANITY CHECKS %%%%%%%  
            if (isnan(f(k))) %for some reason result sometimes gets to be NAN, not sure why this happens
@@ -49,7 +50,7 @@ function [alpha,f] = forceBalance(force,alpha,beta)
            end 
            if (isreal(f(k))==0) %for some reason, not sure why this happens
                f(k) = 0; %temproary fix is to set it zero then
-               display('Warning: ForceBalance encountered a complex value in f(k) where none was expected. Setting to 0 instead.');
+               display('Warning 0: ForceBalance encountered a complex value in f(k) where none was expected. Setting to 0 instead.');
            end       
            %%%END SANITY CHECKS %%%%%%%    
            
@@ -59,10 +60,11 @@ function [alpha,f] = forceBalance(force,alpha,beta)
              sum3 = 0;
              for i = 1:z
                  if(i~=k)
-                 sum3 = sum3 + f(i)*sin(alpha(i));
+                 sum3 = sum3 + f(i)*cos(alpha(i));
                  end
              end;
-             a(k) = asin(-sum3/f(k));    
+             a(k) = asin(-sum3/f(k));
+            
              
            %%%BEGIN SANITY CHECKS %%%%%%%  
            if (isnan(a(k))) %for some reason result sometimes gets to be NAN, not sure why this happens
@@ -74,8 +76,9 @@ function [alpha,f] = forceBalance(force,alpha,beta)
 %                display('Warning: ForceBalance encountered a negative value in a(k) where none was expected. Setting to 0 instead.');
 %            end 
            if (isreal(a(k))==0) %for some reason, not sure why this happens
+               fprintf('k=%d, sum3=%.6f, f(k)=%.6f, ratio=%.6f, a(k)=%s\n', k, sum3, f(k), -sum3/f(k), num2str(a(k)));
                a(k) = 0; %temproary fix is to set it zero then
-               display('Warning: ForceBalance encountered a complex value in a(k) where none was expected. Setting to 0 instead.');
+               display('Warning 1: ForceBalance encountered a complex value in a(k) where none was expected. Setting to 0 instead.');
            end       
            %%%END SANITY CHECKS %%%%%%%   
              

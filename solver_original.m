@@ -10,15 +10,15 @@ N = length(particle);
         display(['fitting force(s) to particle ',num2str(n)]); %status indicator
         if (particle(n).z > 0 )
             % Extract necessary information from particle structure
-            fsigma = particle(n).fsigma;
-            z = particle(n).z;
-            forces = zeros(z,1);
-            cg2s = sum(particle(n).contactG2s);
-            beta = particle(n).betas;
-            rm = particle(n).rm;
+            fsigma  = particle(n).fsigma;
+            z       = particle(n).z;
+            forces  = zeros(z,1);
+            cg2s    = sum(particle(n).contactG2s);
+            beta    = particle(n).betas;
+            rm      = particle(n).rm;
             template = particle(n).forceImage;
             template = imresize(template,scaling);
-            px = size(template,1); 
+            px      = size(template,1); 
             
             % Initial force and alpha values
             for i=1:z

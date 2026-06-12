@@ -117,6 +117,7 @@ for imgnumb = 1:size(files,1)
 
     end
     
+    imwrite(Gimg, 'green.png');
 
     
 
@@ -240,6 +241,7 @@ for imgnumb = 1:size(files,1)
                 particle(f1(l)).color(particle(f1(l)).z)='r'; %changes to color
                 particle(f1(l)).neighbours(particle(f1(l)).z) = particle(f2(l)).id; %particle m is now noted as a neigbour in the particle l datastructure
                 particle(f1(l)).betas(particle(f1(l)).z) = atan2(y(2)-y(1),x(2)-x(1)); %the contact angle to particle m is now noted in the particle l datastructure
+                
                 particle(f2(l)).z= particle(f2(l)).z+1; %increase coordination number
                 particle(f2(l)).contactG2s(particle(f2(l)).z)=contactG2p(2); %remember the g2 value of the current contact area
                 particle(f2(l)).contactIs(particle(f2(l)).z)=contactIp(2);
@@ -249,9 +251,6 @@ for imgnumb = 1:size(files,1)
 
 
             end
-
-
-
 
         end
         %%
@@ -279,7 +278,7 @@ for imgnumb = 1:size(files,1)
                     [contactG2p, contactIp]= contactspotwall(x, y, r, cdParams.CR, contacts_hori(c),Gimg, maskCR);
                     if(contactG2p > cdParams.contactG2Threshold)
                         particle(disk).z= particle(disk).z +1; %increase coordination number
-                        particle(disk).contactG2s(particle(disk).z)=contactG2p;
+                        particle(disk).contactG2s(particle(disk).z)=10*contactG2p;
                         particle(disk).contactIs(particle(disk).z)=contactIp;
                         particle(disk).neighbours(particle(disk).z) = -1; %the wall is now noted as a neigbour in the particle l datastructure
                         particle(disk).betas(particle(disk).z) = contacts_hori(c); %the contact angle to the wall is now noted in the particle l datastructure
@@ -293,7 +292,7 @@ for imgnumb = 1:size(files,1)
                     [contactG2p, contactIp]= contactspotwall(x, y, r, cdParams.CR, contacts_vert(c),Gimg, maskCR);
                     if(contactG2p > cdParams.contactG2Threshold)
                         particle(disk).z= particle(disk).z +1; %increase coordination number
-                        particle(disk).contactG2s(particle(disk).z)=contactG2p;
+                        particle(disk).contactG2s(particle(disk).z)=10*contactG2p;
                         particle(disk).contactIs(particle(disk).z)=contactIp;
                         particle(disk).neighbours(particle(disk).z) = -1; %the wall is now noted as a neigbour in the particle l datastructure
                         particle(disk).betas(particle(disk).z) = contacts_vert(c); %the contact angle to the wall is now noted in the particle l datastructure
