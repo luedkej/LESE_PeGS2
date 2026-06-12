@@ -68,7 +68,7 @@ function out = particleDetect(fileParams, pdParams, verbose)
         % Suppress green bleed-through (same correction as original PeGS2)
         % green = imsubtract(green, green * 0.05);
         
-        %imwrite(green, 'green.png');
+        imwrite(green, 'green_test.png');
 
         %imwrite(red, 'red.png');
 
@@ -76,7 +76,7 @@ function out = particleDetect(fileParams, pdParams, verbose)
 
 
         bw_test = green > 15;
-        %imwrite(bw_test, 'bw_test.png');
+        imwrite(bw_test, 'bw_test.png');
 
         % ── Binarise ──────────────────────────────────────────────────────────
         switch lower(pdParams.threshMethod)
@@ -104,20 +104,20 @@ function out = particleDetect(fileParams, pdParams, verbose)
                 error('Unknown threshMethod: %s', pdParams.threshMethod);
         end
 
-        %imwrite(bw, 'bw_0.png');
+        imwrite(bw, 'bw_0.png');
     
         % ── Morphological cleaning ────────────────────────────────────────────
         % Remove small noise blobs (area < pi*rmin^2 / 2 as conservative limit)
         minArea = pi * pdParams.radiusRange(1)^2 / 2;
         bw      = bwareaopen(bw, round(minArea));
     
-        %imwrite(bw, 'bw_1.png');
+        imwrite(bw, 'bw_1.png');
 
         if pdParams.fillHoles
             bw = imfill(bw, 'holes');
         end
         
-        %imwrite(bw, 'bw_2.png');
+        imwrite(bw, 'bw_2.png');
 
         % ── Measure blob properties ───────────────────────────────────────────
         stats = regionprops(bw_test, ...

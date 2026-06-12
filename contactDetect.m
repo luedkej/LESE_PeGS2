@@ -97,6 +97,8 @@ for imgnumb = 1:size(files,1)
     Rimg = Img(:,:,1);
     Gimg = Img(:,:,2); %force image
 
+    % bw_test = Gimg > 15;
+    % imwrite(bw_test, 'green.png')
 
     %adjust green image contrast by subtracting red channel and adjusting
     %contrast levels as set by imadjust_limits. This will need to be
@@ -108,6 +110,9 @@ for imgnumb = 1:size(files,1)
    
     Gimg = Gimg.*(Gimg > 0);
     Gimg = imadjust(Gimg,cdParams.imadjust_limits);
+    
+    %Gimg = Gimg > 90;
+    %mwrite(Gimg, 'cd_green.png')
    
     if cdParams.figverbose
         figure(1); %makes a lot of figures, override onto 1
@@ -117,7 +122,7 @@ for imgnumb = 1:size(files,1)
 
     end
     
-
+    
     
 
 
@@ -175,9 +180,12 @@ for imgnumb = 1:size(files,1)
                 cropYstop = round(particle(n).y-r)+ size(mask1,2)-1;
 
 
-                particleImg= Gimg(cropYstart:cropYstop, cropXstart:cropXstop).*mask1;
+                particleImg = Gimg(cropYstart:cropYstop, cropXstart:cropXstop).*mask1;
                 particle(n).forceImage=particleImg; %save this so we can fit to this image later in diskSolve
-
+                
+                % imwrite(Gimg, 'Gimg_test.png')
+                % particleImg_test    = Gimg(cropYstart:cropYstop, cropXstart:cropXstop).*mask1;
+                % imwrite(particleImg_test, 'particleImg_test.png')
 
                 %create a circular mask with a radius that is one pixel smaller
                 %for cropping out the relevant gradient
