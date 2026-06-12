@@ -27,7 +27,7 @@ ptParams.skipValue = 20; % padding for data array, I recommend ~10% of packing s
 
 %% contactDetect parameters
 
-cdParams.metersperpixel   = 0.02/(2382);; %meters/pixel
+cdParams.metersperpixel   = 0.02/(2382); %meters/pixel
 cdParams.fsigma           = 157.5;  %photoelastic stress coefficient - Robin
 % cdParams.fsigma           = 32;  %photoelastic stress coefficient - Jakob
 cdParams.g2cal            = 2611.49; %calibration Value for the g^2 method, can be computed by joG2cal.m (PEGS 1.0 version)
@@ -43,8 +43,8 @@ cdParams.figverbose       = true; %show figures
 dsParams.algorithm              = 'levenberg-marquardt'; %Algorithm to use. Other options: 'trust-region-reflective', 'interior-point'
 dsParams.maxIterations          = 200; % maximum iterations allowed for each fit
 dsParams.maxFunctionEvaluations = 400; %maximum number of function evaluations for each fit
-dsParams.functionTolerance      = 0.01; % if subsequent fits change by less than this amount, stop
-dsParams.scaling                = 0.5; %scale image by this much
+dsParams.functionTolerance      = 0.001; % if subsequent fits change by less than this amount, stop
+dsParams.scaling                = 1.0; %scale image by this much
 dsParams.maskradius             = 0.96; %percent of disk to use for fit (cuts outer edge)
 dsParams.original               = 1; % Set 1Run original unvectorised version of disk solver
 dsParams.vectorise              = 0; %Run vectorised version of disk solver (coming soon)

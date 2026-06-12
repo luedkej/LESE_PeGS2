@@ -16,4 +16,4 @@ CR	10
 imadjust_limits	0	0.8
 rednormal	2	
 figverbose	1	
-time	12-Jun-2026 18:31:57	
+time	12-Jun-2026 19:56:30	

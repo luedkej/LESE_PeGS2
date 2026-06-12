@@ -25,6 +25,10 @@ N = length(particle);
                 forces(i) = 2*particle(n).forcescale*particle(n).contactG2s(i)/cg2s;
             end
             alphas = zeros(z,1);
+
+            forces
+            alphas
+            beta
             
             % Apply force balance to the initial guesses - unchanged from
             % PeGS1.0
@@ -44,6 +48,10 @@ N = length(particle);
             p0 = zeros(2*z, 1);
             p0(1:z) = forces;
             p0(z+1:2*z) = alphas;
+
+            forces
+            alphas
+            beta
 
             % Fitting functions
             func = @(par) fringe_pattern_original(z, par(1:z),par(z+1:z+z), beta(1:z), fsigma, rm, px); 

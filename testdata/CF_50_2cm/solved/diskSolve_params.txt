@@ -10,9 +10,9 @@ frameIdInd	8
 algorithm	levenberg-marquardt
 maxIterations	200
 maxFunctionEvaluations	400
-functionTolerance	0.01
-scaling	0.5
+functionTolerance	0.001
+scaling	1
 maskradius	0.96
 original	1
 vectorise	0
-time	12-Jun-2026 18:32:57
+time	12-Jun-2026 20:20:02
