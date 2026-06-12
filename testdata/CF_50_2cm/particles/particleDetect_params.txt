@@ -12,5 +12,5 @@ radiusRange	200	400
 dtol	10	
 sensitivity	0.945	
 edgeThresh	0.02	
-lastimagename	IMG_0004.JPG	
-time	12-Jun-2026 17:06:51	
+lastimagename	IMG_0031.JPG	
+time	12-Jun-2026 17:24:00	
