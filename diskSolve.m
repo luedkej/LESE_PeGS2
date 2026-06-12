@@ -120,7 +120,7 @@ for frame = 1 : nFrames
     NN = length(particle);
     bigSynthImg = zeros(size(img,1),size(img,2)); %make an empty image with the same size as the camera image
     for n=1:NN %for all particles
-        %display(['fitting force(s) to particle ',num2str(n)]); %status indicator
+        display(['fitting force(s) to particle ',num2str(n)]); %status indicator
         if (particle(n).z > 0 )
             %Add the syntetic peImage for the particle to the
             %synthetic image of our whole packing 

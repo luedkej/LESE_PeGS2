@@ -55,21 +55,25 @@ function out = particleDetect(fileParams, pdParams, verbose)
 
 %% IMPORT DATA & BEGIN ANALYSIS
 
-    images = dir(fullfile(fileParams.topDir, fileParams.imgDir,fileParams.imgReg));
+    images = dir(fullfile(fileParams.topDir, fileParams.imgDirPos,fileParams.imgReg));
     nFrames = length(images);
     
 
     for frame = 1:nFrames
 
         im = imread(fullfile(images(frame).folder,images(frame).name)); %read image
-        
-        %get red channel for particle detection
-        red = im(:,:,1); %particles
-        green = im(:,:,2); %photoelastic signal
-        red = imsubtract(red, green*0.05); %some green bleeds through, makes sharper red
 
+        % Resize the image for processing
+        im = imresize(im, 0.25);
+        
+        % get red channel for particle detection
+        red     = im(:,:,1);                    % particles
+        green   = im(:,:,2);                    % photoelastic signal
+        red     = imsubtract(red, green*0.05);  % some green bleeds through, makes sharper red
+
+        imshow(red)
         %circle detection
-        [centers, radii, ~] = imfindcircles(red,pdParams.radiusRange,'ObjectPolarity','bright','Method','TwoStage','Sensitivity',pdParams.sensitivity);%, 'EdgeThreshold',p.edgeThresh);
+        [centers, radii, ~] = imfindcircles(red,pdParams.radiusRange,'ObjectPolarity','dark','Method','TwoStage','Sensitivity',pdParams.sensitivity); %, 'EdgeThreshold',p.edgeThresh);
 
         %classify edge particles
         if pdParams.boundaryType == "rectangle"
@@ -78,16 +82,17 @@ function out = particleDetect(fileParams, pdParams, verbose)
             rpos = max(centers(:,1)+radii);
             upos = max(centers(:,2)+radii);
             bpos = min(centers(:,2)-radii);
+
             lwi = centers(:,1)-radii <= lpos+pdParams.dtol;
             rwi = centers(:,1)+radii >= rpos-pdParams.dtol;
             uwi = centers(:,2)+radii >= upos-pdParams.dtol;
             bwi = centers(:,2)-radii <= bpos+pdParams.dtol; %need to add edge case of corner particle
 
             edges = zeros(length(radii), 1);
-            edges(rwi) = 1; %right
-            edges(lwi) = -1; %left
-            edges(uwi) = 2;  %"upper" - as vertical pixels are backwards from cartesian, actually bottom of image
-            edges(bwi) = -2; %"bottom" - see above comment
+            edges(rwi) = 1;     % right
+            edges(lwi) = -1;    % left
+            edges(uwi) = 2;     % "upper" - as vertical pixels are backwards from cartesian, actually bottom of image
+            edges(bwi) = -2;    % "bottom" - see above comment
             %interior particles are 0
         end %for edge detection
         
@@ -104,7 +109,8 @@ function out = particleDetect(fileParams, pdParams, verbose)
 
 
         %make matrix of positions x ,y, radii, edge classification
-        particle = [centers(:,1), centers(:,2), radii, edges];
+        %% angepasst weil durch bild mit 0.25 skaliert oben
+        particle = [centers(:,1)*4, centers(:,2)*4, radii*4, edges]; 
 
         %save to text file
 
@@ -119,7 +125,7 @@ function out = particleDetect(fileParams, pdParams, verbose)
 %save sample image if verbose
     if verbose == true
         imfilename=['Centers_',images(frame).name];
-        saveas(gcf,fullfile(fileParams.topDir, fileParams.particleDir,imfilename))
+        saveas(gcf,fullfile(fileParams.topDir, fileParams.particleDir,imfilename),'jpg')
     end
 
 %% saving parameters in and finishing module

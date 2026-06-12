@@ -1,0 +1,16 @@
+topDir	C:\Users\Jakob\ETH\Reasearch_Assistance_LESE\repos\LESE_PeGS2\testdata\CF_50_2cm	
+imgDirPos	images_pos	
+imgDir	images	
+particleDir	particles	
+contactDir	contacts	
+solvedDir	solved	
+adjacencyDir	adjacency	
+imgReg	*.JPG	
+frameIdInd	8	
+boundaryType	rectangle	
+radiusRange	200	400
+dtol	10	
+sensitivity	0.945	
+edgeThresh	0.02	
+lastimagename	IMG_0004.JPG	
+time	12-Jun-2026 17:06:51	
