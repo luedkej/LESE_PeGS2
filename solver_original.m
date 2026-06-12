@@ -55,11 +55,15 @@ N = length(particle);
             alphas = p(z+1:z+z);
             fitError = err(p);
             
+            
+
             % Generate an image with the fitted parameters
             imgFit = fringe_pattern_original(z, forces, alphas, beta, fsigma, rm, px*(1/scaling));
             
             % Redo force balance
             [alphas,forces] = forceBalance(forces,alphas,beta);
+
+            forces
             
             % Store the new information in particle 
             particle(n).fitError = fitError;

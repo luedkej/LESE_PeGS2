@@ -75,6 +75,11 @@ end
 
 % these are basic steps to run PeGS on the sample images
 
+clearDirectory(fullfile(fileParams.topDir, fileParams.particleDir))
+clearDirectory(fullfile(fileParams.topDir, fileParams.contactDir))
+clearDirectory(fullfile(fileParams.topDir, fileParams.solvedDir))
+clearDirectory(fullfile(fileParams.topDir, fileParams.adjacencyDir))
+
 %% module to detect contacts between particles. Set parameters in cdParams structure
 
 particleDetect(fileParams, pdParams, verbose);
@@ -110,6 +115,24 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%
 
+function clearDirectory(dirPath)
+    if ~exist(dirPath, 'dir')
+        warning('Directory does not exist: %s', dirPath);
+        return;
+    end
+
+    items = dir(dirPath);
+    items = items(~ismember({items.name}, {'.', '..'}));
+
+    for k = 1:numel(items)
+        itemPath = fullfile(dirPath, items(k).name);
+        if items(k).isdir
+            rmdir(itemPath, 's');   % 's' = recursive
+        else
+            delete(itemPath);
+        end
+    end
+end
 
 function [fileParams] = paramsSetUp(fileParams, verbose)
 
