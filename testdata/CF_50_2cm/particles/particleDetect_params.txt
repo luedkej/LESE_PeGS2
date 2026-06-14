@@ -19,4 +19,4 @@ adaptSens	0.55
 adaptNeighbourhood	4000	
 closingRadius	7	
 lastimagename	IMG_0013.JPG	
-time	14-Jun-2026 16:37:17	
+time	14-Jun-2026 16:49:22	
