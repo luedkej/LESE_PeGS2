@@ -8,11 +8,11 @@ adjacencyDir	adjacency
 imgReg	*.JPG
 frameIdInd	8
 algorithm	levenberg-marquardt
-maxIterations	200
-maxFunctionEvaluations	400
-functionTolerance	0.001
+maxIterations	400
+maxFunctionEvaluations	500
+functionTolerance	1e-06
 scaling	1
-maskradius	0.96
+maskradius	0.85
 original	1
 vectorise	0
-time	12-Jun-2026 21:17:30
+time	14-Jun-2026 16:43:05

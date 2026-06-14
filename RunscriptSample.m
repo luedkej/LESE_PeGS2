@@ -41,11 +41,11 @@ cdParams.figverbose       = true;     % show figures
 %% diskSolve parameters
 
 dsParams.algorithm              = 'levenberg-marquardt'; %Algorithm to use. Other options: 'trust-region-reflective', 'interior-point'
-dsParams.maxIterations          = 200; % maximum iterations allowed for each fit
-dsParams.maxFunctionEvaluations = 400; %maximum number of function evaluations for each fit
-dsParams.functionTolerance      = 0.001; % if subsequent fits change by less than this amount, stop
+dsParams.maxIterations          = 400; % maximum iterations allowed for each fit
+dsParams.maxFunctionEvaluations = 500; % maximum number of function evaluations for each fit
+dsParams.functionTolerance      = 0.000001; % if subsequent fits change by less than this amount, stop
 dsParams.scaling                = 1.0; %scale image by this much
-dsParams.maskradius             = 0.96; %percent of disk to use for fit (cuts outer edge)
+dsParams.maskradius             = 0.85; %percent of disk to use for fit (cuts outer edge)
 dsParams.original               = 1; % Set 1Run original unvectorised version of disk solver
 dsParams.vectorise              = 0; %Run vectorised version of disk solver (coming soon)
 

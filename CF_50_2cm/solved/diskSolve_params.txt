@@ -1,0 +1,18 @@
+topDir	C:\Users\Jakob\ETH\Reasearch_Assistance_LESE\repos\LESE_PeGS2\testdata\CF_50_2cm
+imgDir	images
+imgDirPos	images_pos
+particleDir	particles
+contactDir	contacts
+solvedDir	solved
+adjacencyDir	adjacency
+imgReg	*.JPG
+frameIdInd	8
+algorithm	levenberg-marquardt
+maxIterations	200
+maxFunctionEvaluations	400
+functionTolerance	0.001
+scaling	1
+maskradius	0.96
+original	1
+vectorise	0
+time	12-Jun-2026 21:17:30

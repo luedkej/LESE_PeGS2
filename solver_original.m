@@ -41,7 +41,13 @@ N = length(particle);
             iy=px;
             r=maskradius*px;
             [x,y]=meshgrid(-(cx-1):(ix-cx),-(cy-1):(iy-cy));
-            c_mask=((x.^2+y.^2)<=r^2);   
+            c_mask=((x.^2+y.^2)<=r^2); 
+            
+            col_half = round(r/2);   % r is already in pixels (maskradius*px)
+
+            band_mask      = (x >= -col_half) & (x <= col_half);
+            c_mask_cropped = c_mask & band_mask;
+
 
             %% Least squares fitting
             % Set up initial values
@@ -55,7 +61,7 @@ N = length(particle);
 
             % Fitting functions
             func = @(par) fringe_pattern_original(z, par(1:z),par(z+1:z+z), beta(1:z), fsigma, rm, px); 
-            err = @(par) real(sum(sum( ( c_mask.*(template-func(par)).^2) ))); 
+            err = @(par) real(sum(sum( ( c_mask_cropped .*(template-func(par)).^2) ))); 
             p = lsqnonlin(err,p0,[],[],fitoptions);
 
             % Extract fitting outputs
