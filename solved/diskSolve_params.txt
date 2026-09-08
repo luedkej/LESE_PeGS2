@@ -1,6 +1,6 @@
 topDir	C:\Users\Jakob\ETH\Reasearch_Assistance_LESE\repos\LESE_PeGS2\
-imgDirPos	images_pos
 imgDir	images
+imgDirPos	images_pos
 particleDir	particles
 contactDir	contacts
 solvedDir	solved
@@ -15,4 +15,4 @@ scaling	0.2
 maskradius	0.96
 original	1
 vectorise	0
-time	11-Jun-2026 15:08:43
+time	08-Sep-2026 13:19:54

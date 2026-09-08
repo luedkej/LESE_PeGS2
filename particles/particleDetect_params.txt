@@ -1,16 +1,16 @@
 topDir	C:\Users\Jakob\ETH\Reasearch_Assistance_LESE\repos\LESE_PeGS2\	
-imgDirPos	images_pos	
 imgDir	images	
+imgDirPos	images_pos	
 particleDir	particles	
 contactDir	contacts	
 solvedDir	solved	
 adjacencyDir	adjacency	
-imgReg	*.JPG	
+imgReg	*.png	
 frameIdInd	8	
 boundaryType	rectangle	
-radiusRange	40	120
+radiusRange	40	250
 dtol	10	
 sensitivity	0.9	
 edgeThresh	0.02	
-lastimagename	IMG_0004.JPG	
-time	11-Jun-2026 15:08:19	
+lastimagename	test_image_experiment.png	
+time	08-Sep-2026 13:29:33	

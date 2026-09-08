@@ -10,7 +10,7 @@ fileParams.particleDir  = 'particles';  % output directory for particle informat
 fileParams.contactDir   = 'contacts';   % output directory for contact information
 fileParams.solvedDir    = 'solved';     % output directory for solved force information
 fileParams.adjacencyDir = 'adjacency';  % adjacency list directory
-fileParams.imgReg       = '*.JPG';      % image format and regex
+fileParams.imgReg       = '*.png';      % image format and regex
 fileParams.frameIdInd   = 8;            % the index in the file names where sequential numbering starts, optional, remove if unwanted or if naming conventions are irregular
 
 %% verbose
@@ -19,7 +19,7 @@ verbose = true; % do you want plots?
 %% particleDetect parameters
 
 pdParams.boundaryType = "rectangle";
-pdParams.radiusRange  = [40 120]; % range in pixels to look for particles
+pdParams.radiusRange  = [40 250]; % range in pixels to look for particles
 pdParams.dtol         = 10;       % classify edge particles with tolerance
 pdParams.sensitivity  = 0.9;      % sensitivity for Hough
 pdParams.edgeThresh   = 0.02;     % senstitivity for Hough
