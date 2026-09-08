@@ -43,7 +43,7 @@ N = length(particle);
             [x,y]=meshgrid(-(cx-1):(ix-cx),-(cy-1):(iy-cy));
             c_mask=((x.^2+y.^2)<=r^2); 
             
-            col_half = round(r/2);   % r is already in pixels (maskradius*px)
+            col_half = round(r/3);   % r is already in pixels (maskradius*px)
 
             band_mask      = (x >= -col_half) & (x <= col_half);
             c_mask_cropped = c_mask & band_mask;
